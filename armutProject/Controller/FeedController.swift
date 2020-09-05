@@ -42,7 +42,7 @@ class FeedController : UIViewController{
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false;
-       // cv.register(TrendingPostCell.self, forCellWithReuseIdentifier: trendingPostCell)
+        cv.register(CategoryPostCell.self, forCellWithReuseIdentifier: categoryPostCell)
         
         return cv
     }()
@@ -54,7 +54,7 @@ class FeedController : UIViewController{
            
            let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
            cv.translatesAutoresizingMaskIntoConstraints = false;
-          // cv.register(TrendingPostCell.self, forCellWithReuseIdentifier: trendingPostCell)
+          cv.register(BlogPostCell.self, forCellWithReuseIdentifier: blogPostCell)
            
            return cv
        }()
@@ -77,6 +77,15 @@ class FeedController : UIViewController{
         return lb
     }()
     
+    private let blogLabel : UILabel = {
+        let lb = UILabel()
+        lb.text = "Latest from the blog"
+        lb.textAlignment = .center
+        lb.font = UIFont.boldSystemFont(ofSize: 24)
+        
+        return lb
+    }()
+    
     
 // MARK: - Lifecycle
 
@@ -88,8 +97,9 @@ class FeedController : UIViewController{
        // averageIncomeLabel.anchor(top : view.safeAreaLayoutGuide.topAnchor)
         
         setupScrollView()
-        configureSearchController()
         setupViews()
+        configureSearchController()
+        
         
         
     }
@@ -138,12 +148,18 @@ class FeedController : UIViewController{
         trendingPostCollectionView.delegate = self
         trendingPostCollectionView.dataSource = self
         
+        categoryCollectionView.delegate = self
+        categoryCollectionView.dataSource = self
+        
+        blogsCollectionView.delegate = self
+        blogsCollectionView.dataSource = self
+        
         // Title
-        view.addSubview(titleLabel)
+        contentView.addSubview(titleLabel)
         titleLabel.anchor(top:view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor , paddingTop: 10,paddingLeft: 10)
         
-        // First CollectionView
-        contentView.addSubview(trendingPostCollectionView)
+        // Trending CollectionView
+        view.addSubview(trendingPostCollectionView)
         trendingPostCollectionView.backgroundColor = .white
         
         trendingPostCollectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
@@ -155,10 +171,36 @@ class FeedController : UIViewController{
         trendingPostCollectionView.heightAnchor.constraint(equalToConstant: view.frame.height / 4).isActive = true
         
         // Category Label
-        
         contentView.addSubview(categoryLabel)
         categoryLabel.anchor(top:trendingPostCollectionView.bottomAnchor, left: view.leftAnchor , paddingTop: 10,paddingLeft: 10)
         
+        // Category CollectionView
+        view.addSubview(categoryCollectionView)
+        categoryCollectionView.backgroundColor = .white
+        
+        categoryCollectionView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 20).isActive = true
+        
+        categoryCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
+        
+        categoryCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
+        
+        categoryCollectionView.heightAnchor.constraint(equalToConstant: view.frame.height / 5).isActive = true
+        
+        // Blog Label
+        contentView.addSubview(blogLabel)
+        blogLabel.anchor(top:categoryCollectionView.bottomAnchor, left: view.leftAnchor , paddingTop: 10,paddingLeft: 10)
+        
+        // Blogs CollectionView
+        view.addSubview(blogsCollectionView)
+        blogsCollectionView.backgroundColor = .white
+        
+        blogsCollectionView.topAnchor.constraint(equalTo: blogLabel.bottomAnchor, constant: 20).isActive = true
+        
+        blogsCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
+        
+        blogsCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
+        
+        blogsCollectionView.heightAnchor.constraint(equalToConstant: view.frame.height ).isActive = true
         
     }
     
@@ -183,20 +225,59 @@ class FeedController : UIViewController{
 extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width / 1.5, height: collectionView.frame.height )
+        if collectionView == self.trendingPostCollectionView{
+            return CGSize(width: collectionView.frame.width / 1.5, height: collectionView.frame.height )
+            
+            
+        }
+        else if collectionView == self.categoryCollectionView{
+             return CGSize(width: collectionView.frame.width / 2, height: collectionView.frame.height )
+        }
+        else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height  )
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        if collectionView == self.trendingPostCollectionView{
+            return 5
+        }
+        else if collectionView == self.categoryCollectionView{
+            return 3
+        }
+        else{
+            return 4
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: trendingPostCell, for: indexPath) as! TrendingPostCell
+        if collectionView == self.trendingPostCollectionView{
         
-        cell.backgroundColor = .white
-        //cell.layer.cornerRadius = 10
+            let cellA = collectionView.dequeueReusableCell(withReuseIdentifier: trendingPostCell, for: indexPath) as! TrendingPostCell
+            cellA.backgroundColor = .white
+            
+            return cellA
+        }
         
-        return cell
+        else if collectionView == self.categoryCollectionView{
+            
+            let cellB = collectionView.dequeueReusableCell(withReuseIdentifier: categoryPostCell, for: indexPath) as! CategoryPostCell
+            cellB.backgroundColor = .white
+            
+            return cellB
+            
+        }
+        else {
+            
+            let cellC = collectionView.dequeueReusableCell(withReuseIdentifier: blogPostCell, for: indexPath) as! BlogPostCell
+                       cellC.backgroundColor = .white
+                       
+            return cellC
+            
+        }
+        
     }
     
     
