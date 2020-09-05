@@ -17,7 +17,6 @@ class MainTabController : UITabBarController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //logUserOut()
         configureViewController()
     }
     
@@ -44,6 +43,7 @@ class MainTabController : UITabBarController{
            
            viewControllers = [nav1,nav2,nav3,nav4]
            
+        
        }
        
     func templateNavigationController(title: String, image : UIImage?, rootViewController : UIViewController) -> UINavigationController{
