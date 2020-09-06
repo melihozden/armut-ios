@@ -8,19 +8,28 @@
 
 import UIKit
 
-class PostService {
+class PostService : NSObject {
     
     
      func fetchAllPosts() {
         
-       let requestURL = URL(string: "https://my-json-server.typicode.com/engincancan/case/home")
+        guard let requestURL = URL(string: "https://my-json-server.typicode.com/engincancan/case/home") else {return}
+         
+        let request = URLRequest(url: requestURL)
+        let session = URLSession(configuration : URLSessionConfiguration.default)
+        var posts : Array<Dictionary<String,Any>> = []
         
-            let postData = try! Data(contentsOf: requestURL!)
-          //  print(postData)
+        let task = session.dataTask(with: request) { (data,response,error) in
+        
+            guard let jsonData = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String : Any] else {return}
+        
             
-            let jsonData = try! JSONSerialization.jsonObject(with: postData, options: [])
-           // print(jsonData)
-                   
+            print(jsonData["posts"])
+            
+        }
+        
+        task.resume()
+        
     }
     
     

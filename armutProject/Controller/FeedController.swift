@@ -14,50 +14,27 @@ private let trendingPostCell = "TrendingPostCell"
 private let categoryPostCell = "CategoryPostCell"
 private let blogPostCell = "BlogPostCell"
 
-class FeedController : UIViewController{
+class FeedController : UIViewController, UIScrollViewDelegate{
 
 
     private let searchController = UISearchController(searchResultsController: nil)
-    let scrollView = UIScrollView()
-    let contentView = UIView()
+    var scrollView = UIScrollView()
+    var contentView = UIView()
+    
+    var postCategories : [PostCategory]?
     
  // MARK: - Properties
-
-    // Trending Services CollectionView
-    fileprivate let trendingPostCollectionView : UICollectionView = {
+    
+    let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 16
+        layout.scrollDirection = .vertical
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.translatesAutoresizingMaskIntoConstraints = false;
-        cv.register(TrendingPostCell.self, forCellWithReuseIdentifier: trendingPostCell)
-        
+        cv.backgroundColor = .clear
         return cv
-    }()
-    
-    // Category Collection View
-    fileprivate let categoryCollectionView : UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
         
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.translatesAutoresizingMaskIntoConstraints = false;
-        cv.register(CategoryPostCell.self, forCellWithReuseIdentifier: categoryPostCell)
-        
-        return cv
     }()
-    
-    // Blogs Collection View
-    fileprivate let blogsCollectionView : UICollectionView = {
-           let layout = UICollectionViewFlowLayout()
-           layout.scrollDirection = .horizontal
-           
-           let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-           cv.translatesAutoresizingMaskIntoConstraints = false;
-          cv.register(BlogPostCell.self, forCellWithReuseIdentifier: blogPostCell)
-           
-           return cv
-       }()
     
     private let titleLabel : UILabel = {
         let lb = UILabel()
@@ -92,10 +69,6 @@ class FeedController : UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-       // view.addSubview(averageIncomeLabel)
-       // averageIncomeLabel.anchor(top : view.safeAreaLayoutGuide.topAnchor)
-        
         setupScrollView()
         setupViews()
         configureSearchController()
@@ -108,99 +81,53 @@ class FeedController : UIViewController{
 
 // MARK: - API
     
+    // Fetch all posts
+    func fetchPosts(){
+        
+        
+        
+        
+    }
+    
+    
 // MARK: - Helpers
     
     func setupScrollView(){
+        
+        //scrollView.contentSize = CGSize(width: 320, height: 3000)
         
         // Vertical Scrolling Adjustment
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
+        //scrollView.addSubview(contentView)
         
-        scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        scrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        scrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        scrollView.anchor(top : view.safeAreaLayoutGuide.topAnchor,left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor)
+      
         
-        contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
-        contentView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        
-        // Navigation Center Logo
         let imageView = UIImageView(image: UIImage(named: "armut-logo-color"))
         imageView.contentMode = .scaleAspectFit
         navigationItem.titleView = imageView
         view.backgroundColor = .white
     
         
-              
-        
-    //    let deneme = PostService()
-    //    deneme.fetchAllPosts()
+       let deneme = PostService()
+        deneme.fetchAllPosts()
         
     }
     
     func setupViews(){
         
-        trendingPostCollectionView.delegate = self
-        trendingPostCollectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.dataSource = self
         
-        categoryCollectionView.delegate = self
-        categoryCollectionView.dataSource = self
+        collectionView.register(TrendingPostCell.self, forCellWithReuseIdentifier: trendingPostCell)
+        collectionView.register(CategoryPostCell.self, forCellWithReuseIdentifier: categoryPostCell)
+        collectionView.register(BlogPostCell.self, forCellWithReuseIdentifier: blogPostCell)
         
-        blogsCollectionView.delegate = self
-        blogsCollectionView.dataSource = self
-        
-        // Title
-        contentView.addSubview(titleLabel)
-        titleLabel.anchor(top:view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor , paddingTop: 10,paddingLeft: 10)
-        
-        // Trending CollectionView
-        view.addSubview(trendingPostCollectionView)
-        trendingPostCollectionView.backgroundColor = .white
-        
-        trendingPostCollectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        
-        trendingPostCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
-        
-        trendingPostCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
-        
-        trendingPostCollectionView.heightAnchor.constraint(equalToConstant: view.frame.height / 4).isActive = true
-        
-        // Category Label
-        contentView.addSubview(categoryLabel)
-        categoryLabel.anchor(top:trendingPostCollectionView.bottomAnchor, left: view.leftAnchor , paddingTop: 10,paddingLeft: 10)
-        
-        // Category CollectionView
-        view.addSubview(categoryCollectionView)
-        categoryCollectionView.backgroundColor = .white
-        
-        categoryCollectionView.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 20).isActive = true
-        
-        categoryCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
-        
-        categoryCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
-        
-        categoryCollectionView.heightAnchor.constraint(equalToConstant: view.frame.height / 5).isActive = true
-        
-        // Blog Label
-        contentView.addSubview(blogLabel)
-        blogLabel.anchor(top:categoryCollectionView.bottomAnchor, left: view.leftAnchor , paddingTop: 10,paddingLeft: 10)
-        
-        // Blogs CollectionView
-        view.addSubview(blogsCollectionView)
-        blogsCollectionView.backgroundColor = .white
-        
-        blogsCollectionView.topAnchor.constraint(equalTo: blogLabel.bottomAnchor, constant: 20).isActive = true
-        
-        blogsCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10).isActive = true
-        
-        blogsCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10).isActive = true
-        
-        blogsCollectionView.heightAnchor.constraint(equalToConstant: view.frame.height ).isActive = true
+        view.addSubview(collectionView)
+        collectionView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 20, paddingLeft: 10, paddingBottom: 0, paddingRight: 10)
         
     }
     
@@ -219,69 +146,65 @@ class FeedController : UIViewController{
         definesPresentationContext = false
     }
     
-    
 }
 
-extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView == self.trendingPostCollectionView{
-            return CGSize(width: collectionView.frame.width / 1.5, height: collectionView.frame.height )
-            
-            
-        }
-        else if collectionView == self.categoryCollectionView{
-             return CGSize(width: collectionView.frame.width / 2, height: collectionView.frame.height )
-        }
-        else {
-            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height  )
-        }
-        
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 3
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == self.trendingPostCollectionView{
-            return 5
-        }
-        else if collectionView == self.categoryCollectionView{
-            return 3
-        }
-        else{
-            return 4
-        }
-        
+       return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == self.trendingPostCollectionView{
         
-            let cellA = collectionView.dequeueReusableCell(withReuseIdentifier: trendingPostCell, for: indexPath) as! TrendingPostCell
-            cellA.backgroundColor = .white
+        if indexPath.section == 1 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: categoryPostCell, for: indexPath) as! CategoryPostCell
             
-            return cellA
+            return cell
         }
-        
-        else if collectionView == self.categoryCollectionView{
-            
-            let cellB = collectionView.dequeueReusableCell(withReuseIdentifier: categoryPostCell, for: indexPath) as! CategoryPostCell
-            cellB.backgroundColor = .white
-            
-            return cellB
-            
-        }
-        else {
-            
-            let cellC = collectionView.dequeueReusableCell(withReuseIdentifier: blogPostCell, for: indexPath) as! BlogPostCell
-                       cellC.backgroundColor = .white
+        else if indexPath.section == 2 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: blogPostCell, for: indexPath) as! BlogPostCell
                        
-            return cellC
-            
+            return cell
         }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: trendingPostCell, for: indexPath) as! TrendingPostCell
+        cell.feedController = self
+        
+            return cell
         
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if indexPath.section == 1 {
+            return CGSize(width: view.frame.width, height: 225)
+        }
+        else if indexPath.section == 2 {
+            return CGSize(width: view.frame.width, height: 350)
+        }
+        return CGSize(width: view.frame.width , height: 250)
+    }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if section == 1 {
+             return UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        }
+        else if section == 2 {
+            return UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        }
+        return UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+        
+    }
     
-    
+    func showPostDetail(){
+        
+        let postController = PostController()
+        self.navigationController?.pushViewController(postController, animated: true)
+               
+        print("Out Girdi") 
+    }
     
 }
