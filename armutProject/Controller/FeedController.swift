@@ -20,8 +20,9 @@ class FeedController : UIViewController, UIScrollViewDelegate{
     private let searchController = UISearchController(searchResultsController: nil)
     var scrollView = UIScrollView()
     var contentView = UIView()
+
     
-    var postCategories : [PostCategory]?
+    //var postCategories : [PostCategory]?
     
  // MARK: - Properties
     
@@ -82,13 +83,6 @@ class FeedController : UIViewController, UIScrollViewDelegate{
 // MARK: - API
     
     // Fetch all posts
-    func fetchPosts(){
-        
-        
-        
-        
-    }
-    
     
 // MARK: - Helpers
     
@@ -112,12 +106,10 @@ class FeedController : UIViewController, UIScrollViewDelegate{
         view.backgroundColor = .white
     
         
-       let deneme = PostService()
-        deneme.fetchAllPosts()
-        
     }
     
     func setupViews(){
+        
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -163,6 +155,8 @@ extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewD
         if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: categoryPostCell, for: indexPath) as! CategoryPostCell
             
+            
+            
             return cell
         }
         else if indexPath.section == 2 {
@@ -173,8 +167,10 @@ extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewD
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: trendingPostCell, for: indexPath) as! TrendingPostCell
         cell.feedController = self
+        cell.layer.cornerRadius = 10
         
-            return cell
+        
+        return cell
         
     }
     
@@ -199,11 +195,13 @@ extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewD
         
     }
     
-    func showPostDetail(){
+    func showPostDetail(serviceID : Int){
         
         let postController = PostController()
         self.navigationController?.pushViewController(postController, animated: true)
-               
+        postController.serviceID = serviceID
+        
+        
         print("Out Girdi") 
     }
     

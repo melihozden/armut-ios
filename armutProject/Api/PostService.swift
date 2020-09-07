@@ -8,31 +8,64 @@
 
 import UIKit
 
-class PostService : NSObject {
+class PostService {
     
-    
-     func fetchAllPosts() {
+   /* static func fetchPosts(completion : @escaping ([TrendingModal]) -> Void){
         
-        guard let requestURL = URL(string: "https://my-json-server.typicode.com/engincancan/case/home") else {return}
+        // Fetch All Posts
+        var trendingPosts = [TrendingModal]()
          
-        let request = URLRequest(url: requestURL)
+        let requestURL = URL(string: "https://my-json-server.typicode.com/engincancan/case/home")
+                 
+        let request = URLRequest(url: requestURL!)
         let session = URLSession(configuration : URLSessionConfiguration.default)
-        var posts : Array<Dictionary<String,Any>> = []
+        
         
         let task = session.dataTask(with: request) { (data,response,error) in
-        
-            guard let jsonData = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String : Any] else {return}
-        
-            
-            print(jsonData["posts"])
-            
+                
+        guard let jsonData = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String : Any] else {return}
+                
+        for json in jsonData["trending"] as! [[String : Any]] {
+            let post = TrendingModal(dictionary: json )
+            trendingPosts.append(post)
         }
+        
+        print("DEBUG : Trending :  \(trendingPosts.count)")
+        
+        
+     }
+        completion(trendingPosts)
+        task.resume()
+    }
+    
+    static func getPostDetail(id : Int){
+        
+        let requestURL = URL(string: "https://my-json-server.typicode.com/engincancan/case/service/\(id)")
+                 
+        let request = URLRequest(url: requestURL!)
+        let session = URLSession(configuration : URLSessionConfiguration.default)
+        
+        let task = session.dataTask(with: request) { (data,response,error) in
+                
+        guard let jsonData = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String : Any] else {return}
+            
+            let post = TrendingModal(dictionary: jsonData)
+            
+            print(post.id)
+            print(post.serviceId)
+            print(post.name)
+            print(post.longName)
+            print(post.imageURL)
+            print(post.proCount)
+            print(post.averageRating)
+            print(post.completedJob)
+           
+            
+    }
         
         task.resume()
         
-    }
-    
-    
-    
+}
+ */
     
 }

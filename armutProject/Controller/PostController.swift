@@ -8,40 +8,29 @@
 
 import UIKit
 
-   /* let prosText = NSMutableAttributedString(string: "3785 pros near you")
-    let ratingText = NSMutableAttributedString(string: "4.7 average rating")
-    let complatedJobText = NSMutableAttributedString(string: "Last month 115.789 cleaning job")
-    let freeChangeText = NSMutableAttributedString(string: "Free of change")
-    let serviceGuaranteeText = NSMutableAttributedString(string: "Service Guaranteed")
-    
-    let prosImageAttachment = NSTextAttachment()
-    let ratingImageAttachment = NSTextAttachment()
-    let complatedImageAttachment = NSTextAttachment()
-    let freeChangeImageAttachment = NSTextAttachment()
-    let serviceGuaranteeImageAttachment = NSTextAttachment()
-  
-    prosImageAttachment.image = UIImage(named: "icn-profesyonel-number-orange")
-    prosImageAttachment.image = UIImage(named: "icn-profesyonel-number-orange")
-    prosImageAttachment.image = UIImage(named: "icn-profesyonel-number-orange")
-    prosImageAttachment.image = UIImage(named: "icn-profesyonel-number-orange")
-    prosImageAttachment.image = UIImage(named: "icn-profesyonel-number-orange")
-*/
-
 class PostController : UIViewController{
-    
-  
+
+    var serviceID = -1
     
     // MARK: - Properties
     private let postImageView : UIImageView = {
        let image = UIImageView()
        image.translatesAutoresizingMaskIntoConstraints = false
        image.contentMode = .scaleAspectFill
-       image.image = #imageLiteral(resourceName: "uniYildiz")
        image.clipsToBounds = true
        image.setHeight(height: 250)
        
        return image
            
+    }()
+    
+    private let nameLabel : UILabel = {
+       let lb = UILabel()
+        lb.text = ""
+        lb.font = UIFont.boldSystemFont(ofSize: 24)
+        lb.textColor = .darkGray
+        
+        return lb
     }()
     
     private let prosLabel : UILabel = {
@@ -113,17 +102,53 @@ class PostController : UIViewController{
         super.viewDidLoad()
         
         configureUI()
+        
     }
     
-    // MARK: - Selectors
+    // MARK: - API
+    func fetchDetail(completion : @escaping (TrendingModal) -> Void){
+        
+        let urlString = "https://my-json-server.typicode.com/engincancan/case/service/\(serviceID)"
+        
+        guard let url = URL(string: urlString) else {return}
+        
+        URLSession.shared.dataTask(with: url) { (data,response,error) in
+            guard let data = data else {return}
+           
+         do {
+            guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any] else {return}
+         
+            let post = TrendingModal(json: json)
+            completion(post)
+            
+            }
+            catch let err {
+                print("ERROR Serializing json : ", err)
+            }
+        }.resume()
+    }
+    
+    
     
     // MARK: - Helper
     func configureUI(){
+        
+        fetchDetail { post in
+            
+            self.fillData(name : post.name, prosCount: post.proCount, averageStar: post.averageRating, lastMonth: post.completedJob, serviceName: post.name, imageURL: post.imageURL)
+            
+            
+        }
+        
+        print("DEBUG : SERVICE ID : ",serviceID)
         
         view.backgroundColor = .white
         
         view.addSubview(postImageView)
         postImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
+        
+        view.addSubview(nameLabel)
+        nameLabel.anchor(top : postImageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor,paddingLeft: 12)
         
         let stack = UIStackView(arrangedSubviews: [prosLabel,ratingLabel,complatedJobLabel,freeChangeLabel,serviceGuaranteeLabel])
         stack.axis = .vertical
@@ -131,7 +156,7 @@ class PostController : UIViewController{
         stack.spacing = 25
         
         view.addSubview(stack)
-        stack.anchor(top: postImageView.bottomAnchor,left: view.leftAnchor, right: view.rightAnchor,paddingTop: 16, paddingLeft: 12, paddingRight: 12)
+        stack.anchor(top: nameLabel.bottomAnchor,left: view.leftAnchor, right: view.rightAnchor,paddingTop: 16, paddingLeft: 12, paddingRight: 12)
         
         view.addSubview(dividerLine)
         dividerLine.anchor(top : stack.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
@@ -141,6 +166,20 @@ class PostController : UIViewController{
         howItWorks.anchor(top : stack.bottomAnchor, left: view.leftAnchor,right: view.rightAnchor,paddingTop: 20,paddingLeft: 12,paddingRight: 12)
        
         
+    }
+    
+    func fillData(name : String, prosCount : Int, averageStar : Double, lastMonth : Int, serviceName : String, imageURL : String) {
+       
+        DispatchQueue.main.async {
+            
+            self.nameLabel.text = "\(name)"
+            self.prosLabel.set(image: UIImage(named: "icn-profesyonel-number-orange")!, with: " \(prosCount) pros near you")
+            self.ratingLabel.set(image: UIImage(named: "icn-star-average")!, with: " \(averageStar) average rating")
+            self.complatedJobLabel.set(image: UIImage(named: "icn-job-done-orange")!, with: " Last month \(lastMonth) cleaning job complated")
+            
+            guard let postImageUrl = URL(string: imageURL) else {return}
+            self.postImageView.sd_setImage(with: postImageUrl, completed: nil)
+        }
     }
     
 }

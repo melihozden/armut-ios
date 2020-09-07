@@ -17,7 +17,7 @@
 		33558B9C250267D5003C4C99 /* armutProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 33558B9A250267D5003C4C99 /* armutProject.xcdatamodeld */; };
 		33558B9E250267D6003C4C99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33558B9D250267D6003C4C99 /* Assets.xcassets */; };
 		33558BA1250267D6003C4C99 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33558B9F250267D6003C4C99 /* LaunchScreen.storyboard */; };
-		33633BBB250397BE006A76D9 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33633BBA250397BE006A76D9 /* Post.swift */; };
+		33633BBB250397BE006A76D9 /* TrendingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33633BBA250397BE006A76D9 /* TrendingModal.swift */; };
 		33633BBD250397EC006A76D9 /* TrendingPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33633BBC250397EC006A76D9 /* TrendingPostCell.swift */; };
 		338F0F6A25026F640069E4DB /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F0F6925026F640069E4DB /* PostService.swift */; };
 		338F0F6C250279D20069E4DB /* FeedController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F0F6B250279D20069E4DB /* FeedController.swift */; };
@@ -26,6 +26,7 @@
 		338F0F732502B54B0069E4DB /* NotificationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F0F722502B54B0069E4DB /* NotificationsController.swift */; };
 		338F0F752502B55B0069E4DB /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F0F742502B55B0069E4DB /* ProfileController.swift */; };
 		338F0F772502C0070069E4DB /* PostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F0F762502C0070069E4DB /* PostController.swift */; };
+		33FD91922505776600F6D5E9 /* PostModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD91912505776600F6D5E9 /* PostModal.swift */; };
 		BAE17E60495E9DCD93FE2D76 /* Pods_armutProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BFEDE98BB684F6827594468 /* Pods_armutProject.framework */; };
 /* End PBXBuildFile section */
 
@@ -43,7 +44,7 @@
 		33558B9D250267D6003C4C99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		33558BA0250267D6003C4C99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		33558BA2250267D6003C4C99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		33633BBA250397BE006A76D9 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		33633BBA250397BE006A76D9 /* TrendingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingModal.swift; sourceTree = "<group>"; };
 		33633BBC250397EC006A76D9 /* TrendingPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingPostCell.swift; sourceTree = "<group>"; };
 		338F0F6925026F640069E4DB /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
 		338F0F6B250279D20069E4DB /* FeedController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedController.swift; sourceTree = "<group>"; };
@@ -52,6 +53,7 @@
 		338F0F722502B54B0069E4DB /* NotificationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsController.swift; sourceTree = "<group>"; };
 		338F0F742502B55B0069E4DB /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
 		338F0F762502C0070069E4DB /* PostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostController.swift; sourceTree = "<group>"; };
+		33FD91912505776600F6D5E9 /* PostModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModal.swift; sourceTree = "<group>"; };
 		9BFEDE98BB684F6827594468 /* Pods_armutProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_armutProject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8A0635817C6BF1AFF0FF02 /* Pods-armutProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-armutProject.debug.xcconfig"; path = "Target Support Files/Pods-armutProject/Pods-armutProject.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -130,7 +132,8 @@
 		338F0F6625026F090069E4DB /* Modal */ = {
 			isa = PBXGroup;
 			children = (
-				33633BBA250397BE006A76D9 /* Post.swift */,
+				33633BBA250397BE006A76D9 /* TrendingModal.swift */,
+				33FD91912505776600F6D5E9 /* PostModal.swift */,
 			);
 			path = Modal;
 			sourceTree = "<group>";
@@ -289,8 +292,9 @@
 				338F0F712502B5070069E4DB /* JobsController.swift in Sources */,
 				338F0F6C250279D20069E4DB /* FeedController.swift in Sources */,
 				338F0F732502B54B0069E4DB /* NotificationsController.swift in Sources */,
-				33633BBB250397BE006A76D9 /* Post.swift in Sources */,
+				33633BBB250397BE006A76D9 /* TrendingModal.swift in Sources */,
 				338F0F772502C0070069E4DB /* PostController.swift in Sources */,
+				33FD91922505776600F6D5E9 /* PostModal.swift in Sources */,
 				330227652503B15600D21710 /* CategoryPostCell.swift in Sources */,
 				330227672503B1B700D21710 /* BlogPostCell.swift in Sources */,
 				338F0F6F2502B1F10069E4DB /* MainTabController.swift in Sources */,

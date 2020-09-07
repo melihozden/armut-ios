@@ -7,26 +7,20 @@
 //
 
 import UIKit
+import SDWebImage
 
 class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var feedController : FeedController?
     
-    var postCategory: PostCategory? {
-        
-        didSet{
-            if let name = postCategory?.categoryName {
-                titleLabel.text = name
-            }
-        }
-        
-    }
+    private var posts = [TrendingModal]()
+
     
     let trendingCellId = "trendingCellId"
     
     // MARK: - Properties
     
-    let collectionView : UICollectionView = {
+    let myCollectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 15
         layout.scrollDirection = .horizontal
@@ -54,6 +48,7 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
     override init(frame: CGRect) {
         super.init(frame:frame)
         
+        
         setup()
         
     }
@@ -65,35 +60,67 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
     // MARK: - Selector
     
     // MARK: - API
+    func fetchTrending(){
+           
+           let urlString = "https://my-json-server.typicode.com/engincancan/case/home"
+           
+           guard let url = URL(string: urlString) else {return}
+           
+           URLSession.shared.dataTask(with: url) { (data,response,error) in
+               guard let data = data else {return}
+              
+            do {
+                   guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String : Any] else {return}
+                
+                for dict in json["trending"] as! [[String : Any]]{
+                    let post = TrendingModal(json: dict)
+                    self.posts.append(post)
+                    
+                }
+                
+                DispatchQueue.main.async {
+                    self.myCollectionView.reloadData()
+                }
+                
+               }
+               catch let err {
+                   print("ERROR Serializing json : ", err)
+               }
+           }.resume()
+       }
     
     // MARK: - Helper
     
     func setup(){
         
+       // print("DEBUG : \(posts.count) ")
+        fetchTrending()
+        
         backgroundColor = .white
       
-         collectionView.delegate = self
-         collectionView.dataSource = self
+         myCollectionView.delegate = self
+         myCollectionView.dataSource = self
          
-         collectionView.register(LittleCell.self, forCellWithReuseIdentifier: trendingCellId)
+         myCollectionView.register(LittleCell.self, forCellWithReuseIdentifier: trendingCellId)
          
         addSubview(titleLabel)
         titleLabel.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 10, paddingBottom: 0, paddingRight: 20)
         
-         addSubview(collectionView)
-        collectionView.anchor(top: titleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 10, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+         addSubview(myCollectionView)
+        myCollectionView.anchor(top: titleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 10, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         // JSON Array Data Count will assign here
-        return 5
+        return posts.count
         
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: trendingCellId, for: indexPath) as! LittleCell
+        cell.post = posts[indexPath.row]
         
         
         return cell
@@ -108,12 +135,20 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       
-        feedController?.showPostDetail()
+        
+        feedController?.showPostDetail(serviceID: posts[indexPath.row].id)
+        
+        
         //print("Inside Girdi")
     }
     
-    private class LittleCell: UICollectionViewCell{
+    class LittleCell: UICollectionViewCell{
+        
+       var post : TrendingModal? {
+            didSet {
+               configure()
+            }
+        }
         
         // MARK: - Properties
         private let postImageView : UIImageView = {
@@ -133,7 +168,7 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             lb.font = UIFont.boldSystemFont(ofSize: 16)
             lb.textColor = .black
             lb.numberOfLines = 0
-            lb.text = "Ev Temizliği"
+            lb.text = ""
             return lb
         }()
         
@@ -142,7 +177,7 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             lb.font = UIFont.boldSystemFont(ofSize: 12)
             lb.textColor = UIColor.prosColor
             lb.numberOfLines = 0
-            lb.text = "78 Pros near you"
+            lb.text = ""
             return lb
         }()
         
@@ -151,6 +186,7 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             super.init(frame: frame)
             
             setup()
+            
         }
         
         func setup(){
@@ -166,7 +202,21 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             stack.spacing = 4
             
             addSubview(stack)
-            stack.anchor(top: postImageView.bottomAnchor,left: leftAnchor, right: rightAnchor,paddingTop: 12, paddingLeft: 12, paddingRight: 12)
+            stack.anchor(top: postImageView.bottomAnchor,left: leftAnchor, right: rightAnchor,paddingTop: 12, paddingLeft: 0, paddingRight: 0)
+            
+        }
+        
+        func configure(){
+            
+            guard let post = post else {return}
+            
+           // print("DEBUG : POST : \(post)")
+            
+            postTitleLabel.text = post.name
+            prosLabel.text = "\(post.proCount) Pros near you"
+            postImageView.sd_setImage(with: URL(string: post.imageURL), completed: nil)
+           
+            
             
         }
         
