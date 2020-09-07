@@ -200,7 +200,7 @@ extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewD
         let postController = PostController()
         self.navigationController?.pushViewController(postController, animated: true)
         postController.serviceID = serviceID
-        
+       
         
         print("Out Girdi") 
     }

@@ -10,13 +10,13 @@ import UIKit
 
 class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
    
-    
+     private var posts = [PostModal]()
     
     let blogCellId = "blogCellId"
     
     // MARK: - Properties
     
-    let collectionView : UICollectionView = {
+    let myCollectionView : UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 15
         layout.scrollDirection = .horizontal
@@ -36,48 +36,80 @@ class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectio
         lb.text = "Latest from the blog"
         return lb
     }()
-    
-    
-     
+   
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         setup()
-        
     }
     
+    required init?(coder: NSCoder) {
+           fatalError("init(coder:) has not been implemented")
+       }
+     
+    // MARK: - API
+    func fetchPosts(){
+                  
+        let urlString = "https://my-json-server.typicode.com/engincancan/case/home"
+        
+        guard let url = URL(string: urlString) else {return}
+        
+        URLSession.shared.dataTask(with: url) { (data,response,error) in
+            guard let data = data else {return}
+            
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String : Any] else {return}
+            
+            for dict in json["posts"] as! [[String : Any]]{
+                let post = PostModal(json: dict)
+                self.posts.append(post)
+                
+            }
+           
+            DispatchQueue.main.async {
+                self.myCollectionView.reloadData()
+            }
+            
+            }
+            catch let err {
+                print("ERROR Serializing json : ", err)
+            }
+        }.resume()
+    }
+    
+    // MARK: - Helper
     func setup(){
+        
+        fetchPosts()
+        
         backgroundColor = .white
                
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        myCollectionView.delegate = self
+        myCollectionView.dataSource = self
         
-        collectionView.register(LittleCell.self, forCellWithReuseIdentifier: blogCellId)
+        myCollectionView.register(LittleCell.self, forCellWithReuseIdentifier: blogCellId)
         
         addSubview(titleLabel)
         titleLabel.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 10, paddingBottom: 0, paddingRight: 20)
         
-        addSubview(collectionView)
-        collectionView.anchor(top: titleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 10, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
-               
+        addSubview(myCollectionView)
+        myCollectionView.anchor(top: titleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 10, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
-        
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-           return 2
+        
+        return posts.count
+        
        }
        
        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: blogCellId, for: indexPath) as! LittleCell
-           
+        cell.post = posts[indexPath.row]
+        
            
         return cell
        }
@@ -90,7 +122,21 @@ class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectio
         return UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        guard let url = URL(string: posts[indexPath.row].link!) else {return}
+        UIApplication.shared.open(url)
+        
+        
+    }
+    
     private class LittleCell: UICollectionViewCell{
+        
+        var post : PostModal? {
+            didSet {
+               configure()
+            }
+        }
         
         // MARK: - Properties
         private let postImageView : UIImageView = {
@@ -110,7 +156,7 @@ class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectio
             lb.font = UIFont.boldSystemFont(ofSize: 16)
             lb.textColor = .black
             lb.numberOfLines = 0
-            lb.text = "Ev Temizliği"
+            lb.text = ""
             return lb
         }()
         
@@ -119,7 +165,7 @@ class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectio
             lb.font = UIFont.boldSystemFont(ofSize: 12)
             lb.textColor = UIColor.prosColor
             lb.numberOfLines = 0
-            lb.text = "78 Pros near you"
+            lb.text = ""
             return lb
         }()
         
@@ -130,6 +176,11 @@ class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectio
             setup()
         }
         
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
+        // MARK: - Helper
         func setup(){
             
             backgroundColor = .white
@@ -143,24 +194,20 @@ class BlogPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectio
             stack.spacing = 4
             
             addSubview(stack)
-            stack.anchor(top: postImageView.bottomAnchor,left: leftAnchor, right: rightAnchor,paddingTop: 12, paddingLeft: 12, paddingRight: 12)
+            stack.anchor(top: postImageView.bottomAnchor,left: leftAnchor, right: rightAnchor,paddingTop: 12, paddingLeft: 0, paddingRight: 0)
             
         }
         
-        // MARK: - API
-    
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+        func configure(){
+               
+            guard let post = post else {return}
+                       
+            // print("DEBUG : POST : \(post)")
+            
+            postTitleLabel.text = post.category
+            prosLabel.text = post.title
+            postImageView.sd_setImage(with: URL(string: post.imageURL!), completed: nil)
+   
         }
-    
-    
-    
-    // MARK: - Helper
-    
     }
-    
-    // MARK: - API
-    
-    // MARK: - Helper
-    
 }

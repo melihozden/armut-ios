@@ -14,8 +14,7 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
     var feedController : FeedController?
     
     private var posts = [TrendingModal]()
-
-    
+ 
     let trendingCellId = "trendingCellId"
     
     // MARK: - Properties
@@ -138,8 +137,6 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
         
         feedController?.showPostDetail(serviceID: posts[indexPath.row].id)
         
-        
-        //print("Inside Girdi")
     }
     
     class LittleCell: UICollectionViewCell{
@@ -186,9 +183,13 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             super.init(frame: frame)
             
             setup()
-            
         }
         
+        required init?(coder: NSCoder) {
+                   fatalError("init(coder:) has not been implemented")
+               }
+        
+        // MARK: - Helper
         func setup(){
             
             backgroundColor = .white
@@ -209,23 +210,11 @@ class TrendingPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
         func configure(){
             
             guard let post = post else {return}
-            
            // print("DEBUG : POST : \(post)")
             
             postTitleLabel.text = post.name
             prosLabel.text = "\(post.proCount) Pros near you"
             postImageView.sd_setImage(with: URL(string: post.imageURL), completed: nil)
-           
-            
-            
-        }
-        
-        // MARK: - API
-    
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-        
+       }
     }
-    
 }

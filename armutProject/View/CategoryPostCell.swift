@@ -10,13 +10,15 @@ import UIKit
 
 class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    var deneme : FeedController?
+    var feedController2 : FeedController?
+    
+    private var posts = [TrendingModal]()
     
     let categoryCellId = "categoryCellId"
     
     // MARK: - Properties
     
-    let collectionView : UICollectionView = {
+    let myCollectionView : UICollectionView = {
            let layout = UICollectionViewFlowLayout()
            layout.minimumLineSpacing = 15
            layout.scrollDirection = .horizontal
@@ -33,7 +35,7 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
            lb.font = UIFont.boldSystemFont(ofSize: 24)
            lb.textColor = .black
            lb.numberOfLines = 0
-           lb.text = "Temizlik"
+           lb.text = "Other"
            return lb
        }()
      
@@ -48,20 +50,53 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
         
     }
     
+    // MARK: - API
+    func fetchTrending(){
+        
+        let urlString = "https://my-json-server.typicode.com/engincancan/case/home"
+        
+        guard let url = URL(string: urlString) else {return}
+        
+        URLSession.shared.dataTask(with: url) { (data,response,error) in
+            guard let data = data else {return}
+           
+         do {
+                guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String : Any] else {return}
+             
+             for dict in json["other"] as! [[String : Any]]{
+                 let post = TrendingModal(json: dict)
+                 self.posts.append(post)
+                 
+             }
+             
+             DispatchQueue.main.async {
+                 self.myCollectionView.reloadData()
+             }
+             
+            }
+            catch let err {
+                print("ERROR Serializing json : ", err)
+            }
+        }.resume()
+    }
+    
+    // MARK: - Helper
     func setup(){
+        
+        fetchTrending()
         
         backgroundColor = .white
         
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        myCollectionView.delegate = self
+        myCollectionView.dataSource = self
         
-        collectionView.register(LittleCell.self, forCellWithReuseIdentifier: categoryCellId)
+        myCollectionView.register(LittleCell.self, forCellWithReuseIdentifier: categoryCellId)
         
         addSubview(titleLabel)
         titleLabel.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 10, paddingBottom: 0, paddingRight: 20)
         
-        addSubview(collectionView)
-        collectionView.anchor(top: titleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 10, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        addSubview(myCollectionView)
+        myCollectionView.anchor(top: titleLabel.bottomAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 10, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         
     }
     
@@ -70,16 +105,16 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
     }
     
    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-          return 4
+          return posts.count
       }
       
       func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
           let cell = collectionView.dequeueReusableCell(withReuseIdentifier: categoryCellId, for: indexPath) as! LittleCell
-          
+          cell.post = posts[indexPath.row]
           
           return cell
       }
-    
+   
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 250, height: frame.height)
     }
@@ -88,7 +123,21 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
         return UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+             
+        feedController2?.showPostDetail(serviceID: posts[indexPath.row].id)
+        
+         print("DEBUG : INSIDE GIRDI")
+             
+      }
+    
     private class LittleCell: UICollectionViewCell{
+        
+        var post : TrendingModal? {
+            didSet {
+                configure()
+            }
+        }
         
         // MARK: - Properties
         private let postImageView : UIImageView = {
@@ -108,7 +157,7 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             lb.font = UIFont.boldSystemFont(ofSize: 16)
             lb.textColor = .black
             lb.numberOfLines = 0
-            lb.text = "Ev Temizliği"
+            lb.text = ""
             return lb
         }()
         
@@ -117,16 +166,23 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             lb.font = UIFont.boldSystemFont(ofSize: 12)
             lb.textColor = UIColor.prosColor
             lb.numberOfLines = 0
-            lb.text = "78 Pros near you"
+            lb.text = ""
             return lb
         }()
         
         // MARK: - Lifecycle
+       
         override init(frame: CGRect) {
             super.init(frame: frame)
             
             setup()
         }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+        
+        // MARK: - Helper
         
         func setup(){
             
@@ -141,20 +197,20 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
             stack.spacing = 4
             
             addSubview(stack)
-            stack.anchor(top: postImageView.bottomAnchor,left: leftAnchor, right: rightAnchor,paddingTop: 12, paddingLeft: 12, paddingRight: 12)
+            stack.anchor(top: postImageView.bottomAnchor,left: leftAnchor, right: rightAnchor,paddingTop: 12, paddingLeft: 0, paddingRight: 0)
             
         }
         
-        // MARK: - API
-    
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+        func configure(){
+            
+            guard let post = post else {return}
+            
+           // print("DEBUG : POST : \(post)")
+            
+            postTitleLabel.text = post.name
+            prosLabel.text = "\(post.proCount) Pros near you"
+            postImageView.sd_setImage(with: URL(string: post.imageURL), completed: nil)
         }
-    
-    
-    
-    // MARK: - Helper
-    
     }
     
 }

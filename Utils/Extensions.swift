@@ -106,4 +106,6 @@ extension UIColor {
     
     static let prosColor = UIColor.rgb(red: 168, green: 168, blue: 168)
     
+    static let buttonColor = UIColor.rgb(red: 250, green: 105, blue: 0)
+    
 }

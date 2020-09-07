@@ -10,6 +10,9 @@ import UIKit
 
 class PostController : UIViewController{
 
+    let scrollView = UIScrollView()
+    let contentView = UIView()
+    
     var serviceID = -1
     
     // MARK: - Properties
@@ -95,12 +98,28 @@ class PostController : UIViewController{
         return lb
     }()
     
+    let continueButton : UIButton = {
+       let bt = UIButton()
+        bt.setTitle("Devam", for: .normal)
+        bt.setTitleColor(.white, for: .normal)
+        bt.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        bt.layer.cornerRadius = 10
+        bt.titleEdgeInsets = UIEdgeInsets(top: 10,left: 10,bottom: 10,right: 10)
+        bt.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        bt.widthAnchor.constraint(equalToConstant: 400).isActive = true
+        bt.backgroundColor = .buttonColor
+        
+        return bt
+        
+    }()
+    
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupScrollView()
         configureUI()
         
     }
@@ -127,10 +146,22 @@ class PostController : UIViewController{
             }
         }.resume()
     }
-    
-    
-    
+  
     // MARK: - Helper
+    
+    func setupScrollView(){
+        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        scrollView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        
+        contentView.anchor(top: scrollView.topAnchor, left: scrollView.leftAnchor, bottom: scrollView.bottomAnchor, right: scrollView.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+        
+    }
+    
     func configureUI(){
         
         fetchDetail { post in
@@ -144,10 +175,10 @@ class PostController : UIViewController{
         
         view.backgroundColor = .white
         
-        view.addSubview(postImageView)
+        contentView.addSubview(postImageView)
         postImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
         
-        view.addSubview(nameLabel)
+        contentView.addSubview(nameLabel)
         nameLabel.anchor(top : postImageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor,paddingLeft: 12)
         
         let stack = UIStackView(arrangedSubviews: [prosLabel,ratingLabel,complatedJobLabel,freeChangeLabel,serviceGuaranteeLabel])
@@ -155,15 +186,18 @@ class PostController : UIViewController{
         stack.distribution = .fillEqually
         stack.spacing = 25
         
-        view.addSubview(stack)
+        contentView.addSubview(stack)
         stack.anchor(top: nameLabel.bottomAnchor,left: view.leftAnchor, right: view.rightAnchor,paddingTop: 16, paddingLeft: 12, paddingRight: 12)
         
-        view.addSubview(dividerLine)
+        contentView.addSubview(dividerLine)
         dividerLine.anchor(top : stack.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
       
         
-        view.addSubview(howItWorks)
+        contentView.addSubview(howItWorks)
         howItWorks.anchor(top : stack.bottomAnchor, left: view.leftAnchor,right: view.rightAnchor,paddingTop: 20,paddingLeft: 12,paddingRight: 12)
+        
+        contentView.addSubview(continueButton)
+        continueButton.anchor(top : howItWorks.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 12, paddingRight: 12 )
        
         
     }
