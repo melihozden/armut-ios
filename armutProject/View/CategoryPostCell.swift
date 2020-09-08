@@ -10,7 +10,7 @@ import UIKit
 
 class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    var feedController2 : FeedController?
+    var feedController : FeedController?
     
     private var posts = [TrendingModal]()
     
@@ -66,7 +66,6 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
              for dict in json["other"] as! [[String : Any]]{
                  let post = TrendingModal(json: dict)
                  self.posts.append(post)
-                 
              }
              
              DispatchQueue.main.async {
@@ -124,10 +123,10 @@ class CategoryPostCell : UICollectionViewCell, UICollectionViewDelegate, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-             
-        feedController2?.showPostDetail(serviceID: posts[indexPath.row].id)
         
-         print("DEBUG : INSIDE GIRDI")
+        feedController?.showPostDetail(serviceID: posts[indexPath.row].id)
+        
+        print("DEBUG : INSIDE GIRDI")
              
       }
     

@@ -102,11 +102,10 @@ class PostController : UIViewController{
        let bt = UIButton()
         bt.setTitle("Devam", for: .normal)
         bt.setTitleColor(.white, for: .normal)
-        bt.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        bt.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         bt.layer.cornerRadius = 10
         bt.titleEdgeInsets = UIEdgeInsets(top: 10,left: 10,bottom: 10,right: 10)
-        bt.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        bt.widthAnchor.constraint(equalToConstant: 400).isActive = true
+        bt.setHeight(height: 50)
         bt.backgroundColor = .buttonColor
         
         return bt

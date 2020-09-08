@@ -14,15 +14,9 @@ private let trendingPostCell = "TrendingPostCell"
 private let categoryPostCell = "CategoryPostCell"
 private let blogPostCell = "BlogPostCell"
 
-class FeedController : UIViewController, UIScrollViewDelegate{
-
+class FeedController : UIViewController{
 
     private let searchController = UISearchController(searchResultsController: nil)
-    var scrollView = UIScrollView()
-    var contentView = UIView()
-
-    
-    //var postCategories : [PostCategory]?
     
  // MARK: - Properties
     
@@ -69,47 +63,28 @@ class FeedController : UIViewController, UIScrollViewDelegate{
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupScrollView()
+ 
         setupViews()
         configureSearchController()
-        
-        
-        
+ 
     }
 
-// MARK: - Selectors
+    // MARK: - Selectors
 
-// MARK: - API
+    // MARK: - API
+
+    // MARK: - Helpers
+   
     
-    // Fetch all posts
-    
-// MARK: - Helpers
-    
-    func setupScrollView(){
+    func setupViews(){
         
-        //scrollView.contentSize = CGSize(width: 320, height: 3000)
-        
-        // Vertical Scrolling Adjustment
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(scrollView)
-        //scrollView.addSubview(contentView)
-        
-        scrollView.anchor(top : view.safeAreaLayoutGuide.topAnchor,left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor)
-      
+        view.backgroundColor = .white
         
         let imageView = UIImageView(image: UIImage(named: "armut-logo-color"))
         imageView.contentMode = .scaleAspectFit
         navigationItem.titleView = imageView
         view.backgroundColor = .white
-    
-        
-    }
-    
-    func setupViews(){
-        
+           
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -154,14 +129,15 @@ extension FeedController : UICollectionViewDelegateFlowLayout, UICollectionViewD
         
         if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: categoryPostCell, for: indexPath) as! CategoryPostCell
-            
-            
+            cell.feedController = self
+            cell.layer.cornerRadius = 10
             
             return cell
         }
         else if indexPath.section == 2 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: blogPostCell, for: indexPath) as! BlogPostCell
-                       
+            cell.layer.cornerRadius = 10
+            
             return cell
         }
         
